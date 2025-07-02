@@ -31,11 +31,7 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
   Item.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) =>
-      res.status(200).send(() => {
-        console.log(`${item} has been deleted`);
-      })
-    )
+    .then((item) => res.status(200).send({ item }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
@@ -78,11 +74,7 @@ const dislikeItem = (req, res) =>
     { new: true }
   )
     .orFail()
-    .then((item) =>
-      res.status(200).send(() => {
-        console.log(`${item} has been unliked`);
-      })
-    )
+    .then((item) => res.status(200).send({ item }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
