@@ -73,6 +73,11 @@ const getCurrentUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(400)
+      .send({ message: "Email and Password both required" });
+  }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {

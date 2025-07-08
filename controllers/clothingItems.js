@@ -32,51 +32,40 @@ const createItem = (req, res) => {
     });
 };
 
-// const deleteItem = (req, res) => {
-//   const { itemId } = req.params;
-//   Item.findByIdAndDelete(itemId)
-//     .orFail()
-//     .then((item) => res.status(200).send({ item }))
-//     .catch((err) => {
-//       console.error(err);
-//       if (err.name === "DocumentNotFoundError") {
-//         return res.status(NOT_FOUND).send({ message: err.message });
-//       }
-//       if (err.name === "CastError") {
-//         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-//       }
-//       return res
-//         .status(DEFAULT_ERROR)
-//         .send({ message: "An error has occurred on the server" });
-//     });
-// };
-
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   Item.findById(itemId)
     .then((item) => {
-      if (item.owner === req.user._id) {
-        Item.findByIdAndDelete(itemId)
-          .orFail()
-          .then((item) => res.status(200).send({ item }))
-          .catch((err) => {
-            console.error(err);
-            if (err.name === "DocumentNotFoundError") {
-              return res.status(NOT_FOUND).send({ message: err.message });
-            }
-            if (err.name === "CastError") {
-              return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-            }
-            return res
-              .status(DEFAULT_ERROR)
-              .send({ message: "An error has occurred on the server" });
-          });
+      if (!item) {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-      return res.status(403).send({ message: "Unauthorized action" });
+
+      if (!item.owner.equals(req.user._id)) {
+        return res.status(FORBIDDEN).send({ message: "Unauthorized action" });
+      }
+
+      return Item.findByIdAndDelete(itemId)
+        .then((deletedItem) => {
+          res.status(200).send({ item: deletedItem });
+        })
+        .catch((err) => {
+          console.error(err);
+          if (err.name === "CastError") {
+            return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+          }
+          return res
+            .status(DEFAULT_ERROR)
+            .send({ message: "An error has occurred on the server" });
+        });
     })
     .catch((err) => {
       console.error(err);
-      return res.status(FORBIDDEN).send({ message: "Unauthorized action" });
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+      }
+      return res
+        .status(DEFAULT_ERROR)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
