@@ -26,6 +26,11 @@ app.use(cors());
 app.post("/signup", createUser);
 app.post("/signin", login);
 
+app.use((req, res, next) => {
+  req.user = { _id: "686d36ce79980ab3e5788b74" };
+  next();
+});
+
 app.use(auth);
 app.use("/", mainRouter);
 
