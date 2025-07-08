@@ -1,5 +1,10 @@
 const Item = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT_ERROR } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  DEFAULT_ERROR,
+  FORBIDDEN,
+} = require("../utils/errors");
 
 const getItems = (req, res) => {
   Item.find({})
@@ -27,22 +32,51 @@ const createItem = (req, res) => {
     });
 };
 
+// const deleteItem = (req, res) => {
+//   const { itemId } = req.params;
+//   Item.findByIdAndDelete(itemId)
+//     .orFail()
+//     .then((item) => res.status(200).send({ item }))
+//     .catch((err) => {
+//       console.error(err);
+//       if (err.name === "DocumentNotFoundError") {
+//         return res.status(NOT_FOUND).send({ message: err.message });
+//       }
+//       if (err.name === "CastError") {
+//         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+//       }
+//       return res
+//         .status(DEFAULT_ERROR)
+//         .send({ message: "An error has occurred on the server" });
+//     });
+// };
+
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  Item.findByIdAndDelete(itemId)
-    .orFail()
-    .then((item) => res.status(200).send({ item }))
+  Item.findById(itemId)
+    .then((item) => {
+      if (item.owner === req.user._id) {
+        Item.findByIdAndDelete(itemId)
+          .orFail()
+          .then((item) => res.status(200).send({ item }))
+          .catch((err) => {
+            console.error(err);
+            if (err.name === "DocumentNotFoundError") {
+              return res.status(NOT_FOUND).send({ message: err.message });
+            }
+            if (err.name === "CastError") {
+              return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+            }
+            return res
+              .status(DEFAULT_ERROR)
+              .send({ message: "An error has occurred on the server" });
+          });
+      }
+      return res.status(403).send({ message: "Unauthorized action" });
+    })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
-      return res
-        .status(DEFAULT_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      return res.status(FORBIDDEN).send({ message: "Unauthorized action" });
     });
 };
 
