@@ -4,11 +4,10 @@ const { mongoose } = require("mongoose");
 
 const app = express();
 
-const cors = require("cors");
-
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
 const { auth } = require("./middlewares/auth");
+const cors = require("cors");
 
 const { PORT = 3001 } = process.env;
 
@@ -23,13 +22,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.post("/signup", createUser);
-app.post("/signin", login);
-
 // app.use((req, res, next) => {
-//   req.user = { _id: "686d36ce79980ab3e5788b74" };
+//   req.user = {
+//     _id: "686204b0eca10164a703e89a",
+//   };
 //   next();
 // });
+
+app.post("/signup", createUser);
+app.post("/signin", login);
 
 app.use(auth);
 app.use("/", mainRouter);
