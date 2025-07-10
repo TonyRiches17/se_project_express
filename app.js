@@ -8,6 +8,7 @@ const cors = require("cors");
 
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
+const { getItems } = require("./controllers/clothingItems");
 const { auth } = require("./middlewares/auth");
 
 const { PORT = 3001 } = process.env;
@@ -25,11 +26,7 @@ app.use(cors());
 
 app.post("/signup", createUser);
 app.post("/signin", login);
-
-// app.use((req, res, next) => {
-//   req.user = { _id: "686d36ce79980ab3e5788b74" };
-//   next();
-// });
+app.get("/items", getItems);
 
 app.use(auth);
 app.use("/", mainRouter);
