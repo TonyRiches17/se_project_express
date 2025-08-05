@@ -15,14 +15,18 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then((user) =>
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
       res.status(201).send({
         name: user.name,
         avatar: user.avatar,
         email: user.email,
         _id: user._id,
-      })
-    )
+        token,
+      });
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
