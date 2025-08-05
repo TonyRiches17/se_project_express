@@ -20,9 +20,14 @@ mongoose
   })
   .catch(console.error);
 
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
 app.post("/signup", createUser);
 app.post("/signin", login);
