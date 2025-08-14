@@ -5,11 +5,15 @@ const { mongoose } = require("mongoose");
 const app = express();
 
 const cors = require("cors");
+const { errors } = require('celebrate');
+require("dotenv").config();
 
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
 const { getItems } = require("./controllers/clothingItems");
 const { auth } = require("./middlewares/auth");
+const { errorHandler } = require('./middlewares/error-handler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3001 } = process.env;
 
@@ -29,12 +33,24 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(requestLogger);
+
 app.post("/signup", createUser);
 app.post("/signin", login);
 app.get("/items", getItems);
+app.get('/test-error', (req, res, next) => {
+  const error = new Error('This is a test error');
+  next(error);
+});
 
 app.use(auth);
 app.use("/", mainRouter);
+
+app.use(errorLogger);
+
+app.use(errors());
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
