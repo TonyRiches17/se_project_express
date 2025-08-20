@@ -25,11 +25,12 @@ mongoose
   .catch(console.error);
 
 
-app.use(cors({
-  origin: "https://www.what2wear.minecraftnoob.com",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// app.use(cors({
+//   origin: "https://www.what2wear.minecraftnoob.com",
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
