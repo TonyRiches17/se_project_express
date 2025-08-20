@@ -26,7 +26,7 @@ mongoose
 
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "https://www.what2wear.minecraftnoob.com",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
