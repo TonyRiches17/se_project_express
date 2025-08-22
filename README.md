@@ -32,7 +32,8 @@ MongoDB was used in the project to store the information in a database.
 - The project uses ES6 where possible.
 - The code is well-formatted using the Prettier.
 
-The following domains are associated with this project's backend as well as frontend:
+The following domains are associated with this project's backend as well as frontend and frontend repository:
 - https://api.what2wear.minecraftnoob.com
 - https://www.what2wear.minecraftnoob.com
 - https://what2wear.minecraftnoob.com
+- https://github.com/TonyRiches17/se_project_react
