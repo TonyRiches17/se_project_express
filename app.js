@@ -5,15 +5,17 @@ const { mongoose } = require("mongoose");
 const app = express();
 
 const cors = require("cors");
-const { errors } = require('celebrate');
+const { errors } = require("celebrate");
+const { celebrate, Joi } = require("celebrate");
+
 require("dotenv").config();
 
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
 const { getItems } = require("./controllers/clothingItems");
 const { auth } = require("./middlewares/auth");
-const { errorHandler } = require('./middlewares/error-handler');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { errorHandler } = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const { PORT = 3001 } = process.env;
 
@@ -23,7 +25,6 @@ mongoose
     console.log("Connected to Database");
   })
   .catch(console.error);
-
 
 // app.use(cors({
 //   origin: "https://www.what2wear.minecraftnoob.com",
@@ -36,17 +37,37 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
+app.get("/crash-test", () => {
   setTimeout(() => {
-    throw new Error('Server will crash now');
+    throw new Error("Server will crash now");
   }, 0);
 });
 
-app.post("/signup", createUser);
-app.post("/signin", login);
+app.post(
+  "/signup",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+      name: Joi.string().required().min(2).max(30),
+      imageUrl: Joi.string().uri().required(),
+    }),
+  }),
+  createUser
+);
+app.post(
+  "/signin",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  login
+);
 app.get("/items", getItems);
-app.get('/test-error', (req, res, next) => {
-  const error = new Error('This is a test error');
+app.get("/test-error", (req, res, next) => {
+  const error = new Error("This is a test error");
   next(error);
 });
 
