@@ -10,7 +10,7 @@ router.patch(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
-      imageUrl: Joi.string().uri().required(),
+      avatar: Joi.string().uri().required(),
     }),
   }),
   updateProfile

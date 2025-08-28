@@ -6,7 +6,6 @@ const app = express();
 
 const cors = require("cors");
 const { errors } = require("celebrate");
-const { celebrate, Joi } = require("celebrate");
 
 require("dotenv").config();
 
@@ -16,6 +15,10 @@ const { getItems } = require("./controllers/clothingItems");
 const { auth } = require("./middlewares/auth");
 const { errorHandler } = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const {
+  validateUserBody,
+  validateUserLogin,
+} = require("./middlewares/validation");
 
 const { PORT = 3001 } = process.env;
 
@@ -43,28 +46,8 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
-app.post(
-  "/signup",
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(8),
-      name: Joi.string().required().min(2).max(30),
-      imageUrl: Joi.string().uri().required(),
-    }),
-  }),
-  createUser
-);
-app.post(
-  "/signin",
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(8),
-    }),
-  }),
-  login
-);
+app.post("/signup", validateUserBody, createUser);
+app.post("/signin", validateUserLogin, login);
 app.get("/items", getItems);
 app.get("/test-error", (req, res, next) => {
   const error = new Error("This is a test error");
